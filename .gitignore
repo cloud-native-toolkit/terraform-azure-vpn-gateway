@@ -3,3 +3,6 @@
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
+provider.tf
+.terraform.lock.hcl
+*.terraform.tfstate.lock.info
