@@ -6,3 +6,5 @@ terraform.tfstate.backup
 provider.tf
 .terraform.lock.hcl
 *.terraform.tfstate.lock.info
+resources.tf
+local.tfvars
