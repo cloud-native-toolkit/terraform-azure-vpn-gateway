@@ -2,10 +2,28 @@ name: azure-vpn-gateway
 type: terraform
 description: Module to provision vpn-gateway on azure
 tags:
-  - tools
-  - devops
+   - azure
+   - azure-vpn-gateway
 versions:
   - platforms: []
-    dependencies: []
-    variables: []
+    dependencies: 
+      - id: resource_group
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-resource-group
+            version: ">= 1.0.0"
+      - id: vnet
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-vnet
+            version: ">= 1.0.2"
+     variables:
+      - name: resource_group_name
+        moduleRef:
+          id: resource_group
+          output: name
+      - name: virtual_network_name
+        moduleRef:
+          id: vnet
+          output: name
+      - name: region
+        scope: global
 cloudProvider: azure

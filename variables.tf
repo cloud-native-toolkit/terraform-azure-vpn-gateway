@@ -35,7 +35,7 @@ variable "vpn_gateway_name" {
   description = "This is the VPN Gateway name to be used in the VPN Gateway"
 }
 
-variable "azurerm_virtual_hub_address_prefix" {
+variable "virtual_hub_address_prefix" {
   type        = string
   description = "This value will define the address prefix ( IP Address set ) on Azure Virtual Virtual Hub"
 }
