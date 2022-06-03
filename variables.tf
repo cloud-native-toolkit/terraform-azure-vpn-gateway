@@ -18,10 +18,10 @@ variable "subnet_name" {
   default = "GatewaySubnet"  
 }
 
-variable "virtual_network_address_space" {
-  type        = list(string)
-  description = "This will define the required Address Space and CIDR value"
-}
+# variable "virtual_network_address_space" {
+#   type        = list(string)
+#   description = "This will define the required Address Space and CIDR value"
+# }
 
 variable "subnet_address_space" {
   type        = list(string)
