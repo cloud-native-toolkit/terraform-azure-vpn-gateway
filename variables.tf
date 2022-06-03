@@ -1,11 +1,3 @@
-#variable "myvariable" {
-#  type        = string
-#  description = "A description of my variable"
-#  default     = ""
-#}
-
-
-
 variable "resource_group_name" {
   type        = string
   description = "Name of the Azure resource group where the VPN Gateway has been provisioned."
@@ -19,6 +11,11 @@ variable "region" {
 variable "virtual_network_name" {
   type        = string
   description = "Name of the virtual network"
+}
+variable "subnet_name" {
+  type = string
+  description = "It is mandatory that the associated subnet is named GatewaySubnet"
+  default = "GatewaySubnet"  
 }
 
 variable "virtual_network_address_space" {
@@ -80,7 +77,7 @@ variable "vpn_gw_sku" {
 variable "vpn_ip_configuration" {
   type        = string
   description = "Virtual network gateway IP Configuration name details"
-  default     = "vnetGatewayConfig"
+ #default     = "vnetGatewayConfig"
 }
 
 variable "private_ip_address_allocation_method" {
