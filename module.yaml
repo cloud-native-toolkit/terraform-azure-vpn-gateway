@@ -15,7 +15,7 @@ versions:
         refs:
           - source: github.com/cloud-native-toolkit/terraform-azure-vnet
             version: ">= 1.0.2"
-     variables:
+    variables:
       - name: resource_group_name
         moduleRef:
           id: resource_group
