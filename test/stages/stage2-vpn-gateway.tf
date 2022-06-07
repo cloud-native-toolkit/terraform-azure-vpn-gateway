@@ -1,7 +1,7 @@
 module "azure-vpn-gateway" {
   source                               = "./module"
   region                               = var.region
-  resource_group_name                  = module.resource-group.name
+  resource_group_name                  = module.resource_group.name
   virtual_network_name                 = module.vnet.name
   subnet_address_space                 = ["10.0.0.0/24"]
   public_ip_name                       = "vpn_public_ip"
