@@ -1,13 +1,13 @@
-resource "azurerm_subnet" "subnet" {
-  name                 = var.subnet_name
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.virtual_network_name
-  address_prefixes     = var.subnet_address_space
-}
+# resource "azurerm_subnet" "subnet" {
+#   name                 = var.subnet_name
+#   resource_group_name  = var.resource_group_name
+#   virtual_network_name = var.virtual_network_name
+#   address_prefixes     = var.subnet_address_space
+# }
 
-#=================================================
-# Public IP, Virtual Network Gateway, Certificates 
-#=================================================
+#===================================
+# Public IP, Virtual Network Gateway
+#===================================
 
 resource "azurerm_public_ip" "public_ip" {
   name                = var.public_ip_name
@@ -32,7 +32,7 @@ resource "azurerm_virtual_network_gateway" "virtual_network_gateway" {
     name                          = var.vpn_ip_configuration_name
     public_ip_address_id          = azurerm_public_ip.public_ip.id
     private_ip_address_allocation = var.private_ip_address_allocation_method
-    subnet_id                     = azurerm_subnet.subnet.id
+    subnet_id                     = var.subnet_id
   }
 }
 

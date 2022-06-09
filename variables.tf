@@ -23,9 +23,14 @@ variable "subnet_name" {
 #   description = "This will define the required Address Space and CIDR value"
 # }
 
-variable "subnet_address_space" {
-  type        = list(string)
-  description = "This will define the required Subnet Address Space and CIDR value"
+# variable "subnet_address_space" {
+#   type        = list(string)
+#   description = "This will define the required Subnet Address Space and CIDR value"
+# }
+
+variable "subnet_id" {
+  type        = string
+  description = "The Azure subnet id"
 }
 
 variable "public_ip_name" {
