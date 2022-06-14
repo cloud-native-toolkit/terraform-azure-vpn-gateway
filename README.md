@@ -1,29 +1,14 @@
-# Starter kit for a Terraform module
-
-This is a Starter kit to help with the creation of Terraform modules. The basic structure of a Terraform module is fairly
-simple and consists of the following basic values:
-
-- README.md - provides a description of the module
-- main.tf - defiens the logic for the module
-- variables.tf (optional) - defines the input variables for the module
-- outputs.tf (optional) - defines the values that are output from the module
-
-Beyond those files, any other content can be added and organized however you see fit. For example, you can add a `scripts/` directory
-that contains shell scripts executed by a `local-exec` `null_resource` in the terraform module. The contents will depend on what your
-module does and how it does it.
-
-## Instructions for creating a new module
-
-1. Update the title and description in the README to match the module you are creating
-2. Fill out the remaining sections in the README template as appropriate
-3. Implement your logic in the in the main.tf, variables.tf, and outputs.tf
-4. Use releases/tags to manage release versions of your module
+# Azure VPN Gateway
 
 ## Module overview
 
 ### Description
 
-Description of module
+Module that provisions a VPN Gateway Services, including the following resources:
+- virtual network 
+- subnet
+- public ip
+- virtual network gateway
 
 **Note:** This module follows the Terraform conventions regarding how provider configuration is defined within the Terraform template and passed into the module - https://www.terraform.io/docs/language/modules/develop/providers.html. The default provider configuration flows through to the module. If different configuration is required for a module, it can be explicitly passed in the `providers` block of the module - https://www.terraform.io/docs/language/modules/develop/providers.html#passing-providers-explicitly.
 
@@ -37,30 +22,56 @@ The module depends on the following software components:
 
 #### Terraform providers
 
-- IBM Cloud provider >= 1.5.3
+- Azure provider >= 2.91.0
 
 ### Module dependencies
 
 This module makes use of the output from other modules:
 
-- Cluster - github.com/cloud-native-toolkit/terraform-ibm-container-platform.git
-- Namespace - github.com/cloud-native-toolkit/terraform-cluster-namespace.git
-- etc
+- Azure Resource group - github.com/cloud-native-toolkit/terraform-azure-resource-group
+- Azure Subnets - github.com/cloud-native-toolkit/terraform-azure-subnets
+- Azure VNet - github.com/cloud-native-toolkit/terraform-azure-vnet
 
 ### Example usage
 
 ```hcl-terraform
-module "argocd" {
-  source = "github.com/cloud-native-toolkit/terraform-tools-argocd.git"
-
-  cluster_config_file = module.dev_cluster.config_file_path
-  cluster_type        = module.dev_cluster.type
-  app_namespace       = module.dev_cluster_namespaces.tools_namespace_name
-  ingress_subdomain   = module.dev_cluster.ingress_hostname
-  olm_namespace       = module.dev_software_olm.olm_namespace
-  operator_namespace  = module.dev_software_olm.target_namespace
-  name                = "argocd"
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 2.91.0"
+    }
+  }
 }
+
+provider "azurerm" {
+  features {}
+
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
+}
+
+module "azure-vpn-gateway" {
+  source                               = "https://github.com/cloud-native-toolkit/terraform-azure-vpn-gateway"
+  region                               = var.region
+  resource_group_name                  = module.resource_group.name
+  virtual_network_name                 = module.vnet.name
+  subnet_id                            = module.subnets.ids[0]
+  public_ip_name                       = "vpn_public_ip"
+  public_ip_allocation_method          = "Dynamic"
+  vpn_gateway_name                     = "vpn_gateway_name"
+  gateway_type                         = "Vpn"
+  vpn_type                             = "RouteBased"
+  enable_active_active                 = false
+  enable_bgp                           = false
+  vpn_gw_sku                           = "Basic"
+  vpn_ip_configuration_name            = "vnetGatewayConfig"
+  private_ip_address_allocation_method = "Dynamic"
+}
+
+
 ```
 
 ## Anatomy of the Terraform module
@@ -82,19 +93,29 @@ The module follows the naming convention of terraform modules:
 
 The automation modules rely heavily on [GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions) automatically validate changes to the module and release new versions. The GitHub Action workflows are found in **.github/workflows**. There are three workflows provided by default:
 
-#### Verify and release module (verify.yaml)
+#### Verify Pull Request (verify-pr.yaml)
 
-This workflow runs for pull requests against the `main` branch and when changes are pushed to the `main` branch.
+This workflow runs for pull requests against the `main` branch.
+
+```yaml
+on:
+  pull_request:
+    branches: [ main ]
+```
+
+The `verify` job calls the `verify-workflows.yaml` workflow which checks out the module and deploys the terraform template in the `test/stages` folder. (More on the details of this folder in a later section.) It applies the testcase(s) listed in the `strategy.matrix.testcase` variable against the terraform template to validate the module logic. It then runs the `.github/scripts/validate-deploy.sh` to verify that everything was deployed successfully. **Note:** This script should be customized to validate the resources provisioned by the module. After the deploy is completed, the destroy logic is also applied to validate the destroy logic and to clean up after the test. The parameters for the test case are defined in https://github.com/cloud-native-toolkit/action-module-verify/tree/main/env. New test cases can be added via pull request.
+
+#### Verify (verify.yaml)
+
+This workflow runs when changes are pushed to the `main` branch. Note this should be an exception. Use branch and pull requests against issues for changes by default.
 
 ```yaml
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 ```
 
-The `verify` job checks out the module and deploys the terraform template in the `test/stages` folder. (More on the details of this folder in a later section.) It applies the testcase(s) listed in the `strategy.matrix.testcase` variable against the terraform template to validate the module logic. It then runs the `.github/scripts/validate-deploy.sh` to verify that everything was deployed successfully. **Note:** This script should be customized to validate the resources provisioned by the module. After the deploy is completed, the destroy logic is also applied to validate the destroy logic and to clean up after the test. The parameters for the test case are defined in https://github.com/cloud-native-toolkit/action-module-verify/tree/main/env. New test cases can be added via pull request.
+The `verify` job calls the `verify-workflows.yaml` workflow which checks out the module and deploys the terraform template in the `test/stages` folder. (More on the details of this folder in a later section.) It applies the testcase(s) listed in the `strategy.matrix.testcase` variable against the terraform template to validate the module logic. It then runs the `.github/scripts/validate-deploy.sh` to verify that everything was deployed successfully. **Note:** This script should be customized to validate the resources provisioned by the module. After the deploy is completed, the destroy logic is also applied to validate the destroy logic and to clean up after the test. The parameters for the test case are defined in https://github.com/cloud-native-toolkit/action-module-verify/tree/main/env. New test cases can be added via pull request.
 
 The `verifyMetadata` job checks out the module and validates the module metadata against the module metadata schema to ensure the structure is valid.
 
@@ -193,7 +214,10 @@ The `test/stages` folder contains the terraform template needed to execute the m
 
 1. Fork the module git repository into your personal org
 2. In your forked repository, add the following secrets (note: if you are working in the repo in the Cloud Native Toolkit, these secrets are already available):
-  - __IBMCLOUD_API_KEY__ - an API Key to an IBM Cloud account where you can provision the test instances of any resources you need
+  - __AZURE_SUBSCRIPTION_ID__ - the Azure subscription where you can provision the test instances of any resources you need
+  - __AZURE_CLIENT_ID__ - the Azure Service Principal id to be used for testing
+  - __AZURE_CLIENT_SECRET__ - the secret (like password) of the Azure Service Principal id to be used for testing
+  - __AZURE_TENANT_ID__ - the Azure tenant 
 3. Create a branch in the forked repository where you will do your work
 4. Create a [draft pull request](https://github.blog/2019-02-14-introducing-draft-pull-requests/) in the Cloud Native Toolkit repository for your branch as soon as you push your first change. Add labels to the pull request for the type of change (`enhancement`, `bug`, `chore`) and the type of release (`major`, `minor`, `patch`) to impact the generated release documentation.
 5. When the changes are completed and the automated checks are running successfully, mark the pull request as "Ready to review".
