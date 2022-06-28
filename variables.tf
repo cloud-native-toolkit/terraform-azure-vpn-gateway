@@ -12,10 +12,11 @@ variable "virtual_network_name" {
   type        = string
   description = "Name of the virtual network"
 }
+
 variable "subnet_name" {
-  type = string
+  type        = string
   description = "It is mandatory that the associated subnet is named GatewaySubnet"
-  default = "GatewaySubnet"  
+  default     = "GatewaySubnet"
 }
 
 # variable "virtual_network_address_space" {
@@ -82,7 +83,7 @@ variable "vpn_gw_sku" {
 variable "vpn_ip_configuration_name" {
   type        = string
   description = "Virtual network gateway IP Configuration name details"
- #default     = "vnetGatewayConfig"
+  #default     = "vnetGatewayConfig"
 }
 
 variable "private_ip_address_allocation_method" {
