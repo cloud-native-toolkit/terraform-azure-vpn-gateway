@@ -9,8 +9,14 @@
 # Public IP, Virtual Network Gateway
 #===================================
 
+
+locals {
+  public_ip_name_prefix = "${var.vpn_gateway_name}-pip"
+  vpn_ip_configuration_name_prefix = "${var.vpn_gateway_name}-ip-config"
+}
+
 resource "azurerm_public_ip" "public_ip" {
-  name                = var.public_ip_name
+  name                = var.public_ip_name != "" ? var.public_ip_name : local.public_ip_name_prefix
   location            = var.region
   resource_group_name = var.resource_group_name
   allocation_method   = var.public_ip_allocation_method
@@ -29,7 +35,7 @@ resource "azurerm_virtual_network_gateway" "virtual_network_gateway" {
   sku           = var.vpn_gw_sku
 
   ip_configuration {
-    name                          = var.vpn_ip_configuration_name
+    name                          = var.vpn_ip_configuration_name != "" ? var.vpn_ip_configuration_name : local.vpn_ip_configuration_name_prefix
     public_ip_address_id          = azurerm_public_ip.public_ip.id
     private_ip_address_allocation = var.private_ip_address_allocation_method
     subnet_id                     = var.subnet_id
