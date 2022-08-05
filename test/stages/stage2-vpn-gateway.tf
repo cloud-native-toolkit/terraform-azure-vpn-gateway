@@ -14,4 +14,6 @@ module "azure-vpn-gateway" {
   vpn_gw_sku                           = "Basic"
   vpn_ip_configuration_name            = "vnetGatewayConfig"
   private_ip_address_allocation_method = "Dynamic"
+  vpn_gw_subnet_name                   = "GatewaySubnet"
+  vpn_gw_subnet_ipv4_cidr_blocks       = "10.1.1.0/24"
 }
