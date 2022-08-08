@@ -38,11 +38,6 @@ variable "disable_private_link_endpoint_network_policies" {
   default     = false
 }
 
-variable "subnet_id" {
-  type        = string
-  description = "The Azure subnet id"
-}
-
 variable "public_ip_name" {
   type        = string
   description = "It provide the Public IP for the VPN Gateway"
@@ -92,7 +87,6 @@ variable "vpn_gw_sku" {
 variable "vpn_ip_configuration_name" {
   type        = string
   description = "Virtual network gateway IP Configuration name details"
-  #default     = "vnetGatewayConfig"
 }
 
 variable "private_ip_address_allocation_method" {
@@ -101,12 +95,3 @@ variable "private_ip_address_allocation_method" {
   default     = "Dynamic"
 }
 
-# variable "virtual_network_address_space" {
-#   type        = list(string)
-#   description = "This will define the required Address Space and CIDR value"
-# }
-
-# variable "subnet_address_space" {
-#   type        = list(string)
-#   description = "This will define the required Subnet Address Space and CIDR value"
-# }
