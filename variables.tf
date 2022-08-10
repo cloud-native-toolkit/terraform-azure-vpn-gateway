@@ -13,25 +13,29 @@ variable "virtual_network_name" {
   description = "Name of the virtual network"
 }
 
-variable "subnet_name" {
+variable "vpn_gw_subnet_name" {
   type        = string
   description = "It is mandatory that the associated subnet is named GatewaySubnet"
   default     = "GatewaySubnet"
 }
 
-# variable "virtual_network_address_space" {
-#   type        = list(string)
-#   description = "This will define the required Address Space and CIDR value"
-# }
+variable "vpn_gw_subnet_ipv4_cidr_blocks" {
+  type = string
+  description = "This defines the CIDR Value for the Subnet-Gateway"
+}
 
-# variable "subnet_address_space" {
-#   type        = list(string)
-#   description = "This will define the required Subnet Address Space and CIDR value"
-# }
+variable "service_endpoints" {
+  type        = list(string)
+  description = "The list of service endpoints for the subnet"
+  default     = [
+    "Microsoft.ContainerRegistry"
+  ]
+}
 
-variable "subnet_id" {
-  type        = string
-  description = "The Azure subnet id"
+variable "disable_private_link_endpoint_network_policies" {
+  type        = bool
+  description = "Flag to disable private link endpoint network policies in the subnet."
+  default     = false
 }
 
 variable "public_ip_name" {
@@ -83,7 +87,6 @@ variable "vpn_gw_sku" {
 variable "vpn_ip_configuration_name" {
   type        = string
   description = "Virtual network gateway IP Configuration name details"
-  #default     = "vnetGatewayConfig"
 }
 
 variable "private_ip_address_allocation_method" {
@@ -91,3 +94,4 @@ variable "private_ip_address_allocation_method" {
   description = "Defines the allocation method for this IP address. Values are Static or Dynamic. Defaults is Dynamic"
   default     = "Dynamic"
 }
+
