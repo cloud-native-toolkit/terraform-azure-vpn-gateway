@@ -15,6 +15,109 @@ versions:
         refs:
           - source: github.com/cloud-native-toolkit/terraform-azure-vnet
             version: '>= 1.0.2'
+    variables:
+      - name: resource_group_name
+        type: string
+        description: >-
+          Name of the Azure resource group where the VPN Gateway has been
+          provisioned.
+        moduleRef:
+          id: resource_group
+          output: name
+      - name: region
+        type: string
+        description: Location/region to keep all your network resources
+        scope: global
+      - name: virtual_network_name
+        type: string
+        description: Name of the virtual network
+        moduleRef:
+          id: vnet
+          output: name
+      - name: vpn_gw_subnet_name
+        type: string
+        description: It is mandatory that the associated subnet is named GatewaySubnet
+        default: GatewaySubnet
+      - name: vpn_gw_subnet_ipv4_cidr_blocks
+        type: string
+        description: This defines the CIDR Value for the Subnet-Gateway
+      - name: service_endpoints
+        type: list(string)
+        description: The list of service endpoints for the subnet
+        default:
+          - Microsoft.ContainerRegistry
+      - name: disable_private_link_endpoint_network_policies
+        type: bool
+        description: Flag to disable private link endpoint network policies in the subnet.
+        default: false
+      - name: public_ip_name
+        type: string
+        description: It provide the Public IP for the VPN Gateway
+      - name: public_ip_allocation_method
+        type: string
+        description: >-
+          Defines the allocation method for this IP address. Possible values are
+          Static or Dynamic. Defaults is Dynamic
+        default: Dynamic
+      - name: vpn_gateway_name
+        type: string
+        description: Name of the Virtual Network Gateway
+      - name: gateway_type
+        type: string
+        description: >-
+          The type of the Virtual Network Gateway. Options are Vpn or
+          ExpressRoute
+        default: Vpn
+      - name: vpn_type
+        type: string
+        description: >-
+          The routing type of the Virtual Network Gateway. Options are
+          RouteBased or PolicyBased. Defaults is RouteBased
+        default: RouteBased
+      - name: enable_active_active
+        type: bool
+        description: >-
+          An active-active Virtual Network Gateway will be created, if - true.
+          And it requires a HighPerformance or an UltraPerformance sku. An
+          active-standby gateway will be created, if - false. Defaults to false.
+        default: false
+      - name: enable_bgp
+        type: bool
+        description: >-
+          BGP (Border Gateway Protocol) will be enabled if - True for this
+          Virtual Network Gateway. Defaults to false
+        default: false
+      - name: vpn_gw_sku
+        type: string
+        description: >-
+          Size and capacity of the virtual network gateway. Options are Basic,
+          VpnGw1, VpnGw2
+        default: Basic
+      - name: vpn_ip_configuration_name
+        type: string
+        description: Virtual network gateway IP Configuration name details
+      - name: private_ip_address_allocation_method
+        type: string
+        description: >-
+          Defines the allocation method for this IP address. Values are Static
+          or Dynamic. Defaults is Dynamic
+        default: Dynamic
+    version: v1.0.1
+    outputs:
+      - name: vpn_gateway_name
+        description: Name of the Azure VPN Gateway created
+      - name: vpn_gateway_public_ip
+        description: The Public IP of the Virtual Network Gateway.
+  - platforms: []
+    dependencies:
+      - id: resource_group
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-resource-group
+            version: '>= 1.0.0'
+      - id: vnet
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-vnet
+            version: '>= 1.0.2'
       - id: subnet
         refs:
           - source: github.com/cloud-native-toolkit/terraform-azure-subnets
