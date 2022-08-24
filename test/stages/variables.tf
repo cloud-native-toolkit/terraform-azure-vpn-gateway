@@ -1,8 +1,3 @@
-# Resource Group Variables
-variable "resource_group_name" {
-  type        = string
-  description = "Existing resource group where the IKS cluster will be provisioned."
-}
 
 variable "region" {
   type        = string
@@ -12,7 +7,7 @@ variable "region" {
 variable "name_prefix" {
   type        = string
   description = "Prefix name that should be used for the cluster and services. If not provided then resource_group_name will be used"
-  default     = ""
+  default     = "gh-test"
 }
 
 variable "enabled" {}
