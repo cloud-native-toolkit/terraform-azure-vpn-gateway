@@ -41,6 +41,7 @@ variable "disable_private_link_endpoint_network_policies" {
 variable "public_ip_name" {
   type        = string
   description = "It provide the Public IP for the VPN Gateway"
+  default     = ""
 }
 
 variable "public_ip_allocation_method" {
@@ -87,6 +88,7 @@ variable "vpn_gw_sku" {
 variable "vpn_ip_configuration_name" {
   type        = string
   description = "Virtual network gateway IP Configuration name details"
+  default     = ""
 }
 
 variable "private_ip_address_allocation_method" {
